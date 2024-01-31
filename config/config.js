@@ -19,6 +19,7 @@ module.exports = {
         "password" : process.env.PGPASSWORD,
         "database" : process.env.PGDATABASE,
         "host" : process.env.PGHOST,
-        "dialect" : process.env.PGDIALECT,
+        "port" : process.env.PGPORT,
+        "dialect" : "postgres",
     }
 }
