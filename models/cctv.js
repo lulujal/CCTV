@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       this.hasMany(models.DenahGedung,{foreignKey:'CctvId'})
+      this.hasMany(models.cctvroom,{foreignKey:'CctvId'})
     }
   }
   Cctv.init({
