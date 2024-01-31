@@ -120,7 +120,7 @@ async function initMap() {
     // fetch data cctv dari database dengan API getCctvs
     const getCctvs = async () => {
         try {
-            const response = await fetch('http://localhost:3000/cctv');
+            const response = await fetch('/cctv');
             const data = await response.json();
             return data;
         } catch (error) {
