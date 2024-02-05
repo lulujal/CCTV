@@ -1,8 +1,8 @@
 async function initMap() {
     // inisiasi variabel area unnes dan center dari map
-    const unnes = { lat:  -7.048789, lng: 110.396982 }
+    const unnes = { lat:  -7.048835, lng:110.396531 }
     const map = new google.maps.Map(document.getElementById("map"), {
-        zoom: 16,
+        zoom: 15,
         center: unnes,
     });
 
