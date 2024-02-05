@@ -1,7 +1,7 @@
 <%- include('../partials/header')  %>
-  <body>
-    <%- include('../partials/navbar')  %>
-    <div style="text-align: center;">
-        <iframe src="<%= url %>" width="1080" height="720" allowfullscreen autoplay></iframe>
-      </div>
-  </body>
+<body class="bg-transparent-black">
+  <%- include('../partials/navbar')  %>
+  <div class="iframe-container">
+    <iframe class="responsive-iframe" src="<%= url %>" allowfullscreen autoplay></iframe>
+  </div>
+</body>
