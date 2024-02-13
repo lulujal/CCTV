@@ -1,17 +1,29 @@
-<nav class="navbar fixed-top bg-body-tertiary" data-bs-theme="dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="#">
-            <img src="https://unnes.ac.id/lppm/wp-content/uploads/sites/16/2015/08/Logo-Transparan-Warna-1.png" 
+<nav class="navbar navbar-expand-lg fixed-top bg-body-tertiary" data-bs-theme="dark">
+    <div class="container-fluid d-flex align-items-center">
+        <a class="navbar-brand" href="#navbar">
+            <img src="/img/logo_unnes.png" 
             alt="" 
-            width="24" 
-            height="30" 
+            width="18" 
+            height="18" 
             class="d-inline-block align-text-top">
             UNNES-CCTV
         </a>
-        <div class="d-flex">
-            <form action="/logout" method="POST">
-                <button class="btn" type="submit">Logout</button>
-            </form>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <form action="/cctv/admin" method="get">
+                        <button class="btn" type="submit">Kelola CCTV</button>
+                    </form>
+                </li>
+                <li class="nav-item">
+                    <form action="/logout" method="post">
+                        <button class="btn" type="submit">Logout</button>
+                    </form>
+                </li>
+            </ul>
         </div>
     </div>
 </nav>
