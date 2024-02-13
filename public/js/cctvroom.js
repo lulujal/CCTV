@@ -27,16 +27,20 @@ window.onload = function() {
         infowindowButton.onclick = () => {
             window.location.href = `/cctvnormal?url=${encodeURIComponent(url)}`;
         };
-    } else {
+    } else if (infowindow) {
         // hide infowindow saat klik di luar marker
         infowindow.style.display = 'none';
       }
     });
   
     // Hideinfowindow saat tombol close diklik
-    infowindowClose.addEventListener('click', function(event) {
-      event.stopPropagation();
-      infowindow.style.display = 'none';
-    });
+    if (infowindowClose) {
+      infowindowClose.addEventListener('click', function(event) {
+        event.stopPropagation();
+        if (infowindow) {
+          infowindow.style.display = 'none';
+        }
+      });
+    }
 
   }

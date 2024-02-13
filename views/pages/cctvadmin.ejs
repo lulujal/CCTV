@@ -1,0 +1,40 @@
+<%- include('../partials/header')  %>
+<body>
+  <%- include('../partials/navbar')  %>
+<div class="table-responsive">
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Content</th>
+            <th>Nama</th>
+            <th>type</th>
+            <th>url</th>
+            <th>latitude</th>
+            <th>longitude</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Use JavaScript to fetch CCTV data from the API and populate the table rows dynamically -->
+        <script>
+            fetch('/cctv')
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(cctv => {
+                        document.querySelector('tbody').innerHTML += `
+                            <tr>
+                                <td>${cctv.id}</td>
+                                <td>${cctv.content}</td>
+                                <td>${cctv.nama}</td>
+                                <td>${cctv.type}</td>
+                                <td>${cctv.url}</td>
+                                <td>${cctv.lat}</td>
+                                <td>${cctv.lng}</td>
+                            </tr>
+                        `;
+                    });
+                });
+        </script>
+    </tbody>
+</table>
+</div>

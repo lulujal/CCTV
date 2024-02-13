@@ -107,6 +107,15 @@ router.get('/cctvgedung/:id', async function(req, res) {
     }
 })
 
+router.get('/cctv/admin', async (req, res) => {
+    try {
+        res.render('cctvadmin');
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: 'Internal Server Error'});
+    }
+});
+
 router.post('/logout', async (req, res) => {
     try {
         await AdminController.AdminLogout(req, res);
