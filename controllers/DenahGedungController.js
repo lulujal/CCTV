@@ -1,6 +1,16 @@
 const {DenahGedung,cctvroom} = require('../models')
 class DenahGedungController {
-    static async getDenahGedung(req, res) {
+    static async getDenahGedungs(req, res) {
+        try{
+            const denahGedung = await DenahGedung.findAll()
+            res.status(200).json(denahGedung)
+        }catch(error){
+            console.log(error);
+            res.status(500).json({message: 'Internal Server Error'});
+        }
+    }
+
+    static async getDenahGedungbyId(req, res) {
         try{
         const id = req.params.id
         const denahGedung = await DenahGedung.findOne({
@@ -27,7 +37,7 @@ class DenahGedungController {
 
     static async addDenahGedung(req, res) {
         try{
-            const {url1,url2,url3,url4,url5,url6,CctvId} = req.body
+            const {url1,url2,url3,url4,url5,url6,nama_gedung,CctvId} = req.body
             const denahGedung = await DenahGedung.create({
                 url1,
                 url2,
@@ -35,9 +45,36 @@ class DenahGedungController {
                 url4,
                 url5,
                 url6,
+                nama_gedung,
                 CctvId
             })
             res.status(201).json(denahGedung)
+        }catch(error){
+            console.log(error);
+            res.status(500).json({message: 'Internal Server Error'});
+        }
+    }
+
+    static async updateDenahGedung(req, res) {
+        try{
+            const id = req.params.id
+            const {url1,url2,url3,url4,url5,url6,nama_gedung,CctvId} = req.body
+            await DenahGedung.update({
+                url1,
+                url2,
+                url3,
+                url4,
+                url5,
+                url6,
+                nama_gedung,
+                CctvId
+            },{
+                where: {
+                    id: id
+                },
+                returning: true
+            })
+            res.status(200).json({message: 'denah gedung updated'})
         }catch(error){
             console.log(error);
             res.status(500).json({message: 'Internal Server Error'});
@@ -78,6 +115,51 @@ class DenahGedungController {
         }
     }
 
+    static async getCctvRoombyId(req, res) {
+        try{
+        const id = req.params.id
+        const Cctvroom = await cctvroom.findAll({
+            where:{
+                CctvId: id
+            }
+        })
+        if (Cctvroom){
+            res.status(200).json(Cctvroom)
+        }
+        else{
+            res.status(404).json({message: 'cctv room not found'})
+        }
+    }catch(error){
+        console.log(error);
+        res.status(500).json({message: 'Internal Server Error'});
+    }
+    }
+
+    static async updatecctvroom(req, res) {
+        try{
+            const id = req.params.id
+            const {content,nama,url,x,y,lantai,CctvId} = req.body
+            await cctvroom.update({
+                content,
+                nama,
+                url,
+                x,
+                y,
+                lantai,
+                CctvId
+            },{
+                where: {
+                    id: id
+                },
+                returning: true
+            })
+            res.status(200).json({message: 'cctvroom updated'})
+        }catch(error){
+            console.log(error);
+            res.status(500).json({message: 'Internal Server Error'});
+        }
+    }
+    
     static async deletecctvroom(req, res) {
         try{
             const id = req.params.id

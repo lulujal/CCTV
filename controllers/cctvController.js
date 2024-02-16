@@ -41,6 +41,32 @@ class cctvController {
         }
     }
 
+    static updateCctv(req, res) {
+        try{
+            const id = req.params.id
+            const { content,nama,type,url,lat,lng} = req.body
+            Cctv.update({
+                content,
+                nama,
+                type,
+                url,
+                lat,
+                lng
+            },{
+                where: {
+                    id: id
+                },
+                returning: true
+            })
+            .then((result) => {
+                res.status(200).json(result[1][0])
+            })
+        }catch(err){
+            console.log(err);
+            res.status(500).json(err)
+        }
+    }
+
     static deletecctv(req, res) {
         try{
             const id = req.params.id

@@ -1,0 +1,169 @@
+<%- include('../partials/header')  %>
+<body style="padding-top: 60px;">
+  <%- include('../partials/navbar')  %>
+  <script type="module" src="/js/cctvdashboard.js"></script>
+  <div class="table-title">
+    <div class="row align-items-center">
+        <div class="col-lg-10 col-12">
+            <div class="input-group mb-3" id="search-cctv">
+                <span class="input-group-text" id="basic-addon2"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                  </svg></span>
+                <input id="search-input" type="text" class="form-control" placeholder="Cari cctv berdasarkan nama" aria-label="Cari cctv berdasarkan nama" aria-describedby="basic-addon2">
+            </div>
+        </div>
+        <div class="col-lg-2 col-12">
+            <a class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addCctvModal">Tambah CCTV</a>
+        </div>
+    </div>
+</div>
+<div class="container-table" style="margin: 10px;">
+    <!-- tabel -->
+    <div class="table-responsive" >
+        <table class="table table-striped table-hover" id="cctvTable">
+            <thead>
+                <tr>
+                    <th style="background:#435d7d;">ID</th>
+                    <th>Content</th>
+                    <th>Nama</th>
+                    <th>type</th>
+                    <th>url</th>
+                    <th>latitude</th>
+                    <th>longitude</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody id="cctv-tbody">
+            </tbody>
+        </table>
+    </div>
+
+  <!-- pagination -->
+  <div style="display: flex; justify-content: space-between;margin-bottom: 10px;">
+    <label>Show 
+      <select id="entries">
+        <option value="10">10</option>
+        <option value="20">20</option>
+        <option value="25">25</option>
+      </select> 
+      entries
+    </label>
+    <ul class="pagination pagination-sm" id="pagination"></ul>
+  </div>
+</div>
+
+  <!-- mini map -->
+  <div id="map" style="width:100%; height: 400px;"></div>
+
+  <!-- modal Tambah CCTV -->
+  <div id="addCctvModal" class="modal fade">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form id="addCctvForm">
+          <div class="modal-header">						
+            <h4 class="modal-title">Tambah CCTV</h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">					
+            <div class="form-group">
+              <label for="content">Content</label>
+              <input type="text" class="form-control" id="content" required>
+            </div>
+            <div class="form-group">
+              <label for="nama">Nama</label>
+              <input type="text" class="form-control" id="nama" required>
+            </div>
+            <div class="form-group">
+              <label for="type">Type</label>
+              <input type="text" class="form-control" id="type" required>
+              </div>
+            <div class="form-group">
+                <label for="url">URL</label>
+                <input type="text" class="form-control" id="url" required>
+                </div>
+            <div class="form-group">
+                <label for="lat">Latitude</label>
+                <input type="text" class="form-control" id="lat" required>
+                </div>
+            <div class="form-group">
+                <label for="lng">Longitude</label>
+                <input type="text" class="form-control" id="lng" required>
+                </div>
+          </div>
+            <div class="modal-footer">
+                <input type="button" class="btn btn-default" data-bs-dismiss="modal" value="Batal">
+                <input type="submit" class="btn btn-success" value="Tambah">
+            </div>
+          </form>
+        </div>
+    </div>
+</div>
+
+<!-- modal Edit CCTV -->
+<div id="editCctvModal" class="modal fade">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="editCctvForm">
+        <div class="modal-header">						
+          <h4 class="modal-title">Edit CCTV</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">					
+          <div class="form-group">
+            <label for="edit-content">Content</label>
+            <input type="text" class="form-control" id="edit-content" required>
+          </div>
+            <div class="form-group">
+                <label for="edit-nama">Nama</label>
+                <input type="text" class="form-control" id="edit-nama" required>
+            </div>
+            <div class="form-group">
+                <label for="edit-type">Type</label>
+                <input type="text" class="form-control" id="edit-type" required>
+            </div>
+            <div class="form-group">
+                <label for="edit-url">URL</label>
+                <input type="text" class="form-control" id="edit-url" required>
+            </div>
+            <div class="form-group">
+                <label for="edit-lat">Latitude</label>
+                <input type="text" class="form-control" id="edit-lat" required>
+            </div>
+            <div class="form-group">
+                <label for="edit-lng">Longitude</label>
+                <input type="text" class="form-control" id="edit-lng" required>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <input type="button" class="btn btn-default" data-bs-dismiss="modal" value="Batal">
+            <input type="hidden" id="edit-id">
+            <input type="submit" class="btn btn-success" value="Simpan">
+        </div>
+        </form>
+        </div>
+    </div>
+</div>
+
+<!-- delete modal -->
+<div id="deleteCctvModal" class="modal fade">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form id="deleteCctvForm">
+        <div class="modal-header">						
+          <h4 class="modal-title">Hapus CCTV</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">					
+          <p>Apakah Anda yakin ingin menghapus CCTV ini?</p>
+          <p class="text-warning"><small>Ini tidak bisa diurungkan.</small></p>
+        </div>
+        <div class="modal-footer">
+          <input type="button" class="btn btn-default" data-bs-dismiss="modal" value="Batal">
+          <input type="hidden" id="delete-id">
+          <input type="submit" class="btn btn-danger" value="Hapus">
+        </div>
+        </form>
+        </div>
+    </div>
+</div>
+</body>

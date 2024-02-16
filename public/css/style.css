@@ -50,8 +50,6 @@ body {
   
   input[type="text"] {
     margin-bottom: 0px;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
   }
   
   input[type="password"] {
@@ -97,6 +95,73 @@ body {
   margin-top: 20px
 }
 
+.table-responsive {
+  margin: 0px 0px 0px;
+}
+
+.table-title{
+  position: sticky;
+  padding-bottom: 15px;
+	background: #435d7d;
+	color: #fff;
+	padding: 13px 67px 4px;
+	min-width: 100%;
+	margin: -4px 0px 0px;
+	border-radius: 3px 3px 0 0;
+}
+
+.table-title .btn.btn-success {
+	margin: 5px 0 20px;
+  float: right;
+}
+
+thead tr th {
+  background: #435d7d !important;
+  color: #fff !important;
+  text-align: center;
+  vertical-align: middle;
+  border: oldlace 1px solid;
+  /* Add other styles as needed */
+}
+
+/* Modal styles */
+.modal .modal-dialog {
+	max-width: 400px;
+}
+.modal .modal-header, .modal .modal-body, .modal .modal-footer {
+	padding: 20px 30px;
+}
+.modal .modal-content {
+	border-radius: 3px;
+	font-size: 14px;
+}
+.modal .modal-footer {
+	background: #ecf0f1;
+	border-radius: 0 0 3px 3px;
+}
+.modal .modal-title {
+	display: inline-block;
+}
+.modal .form-control {
+	border-radius: 2px;
+	box-shadow: none;
+	border-color: #dddddd;
+}
+.modal textarea.form-control {
+	resize: vertical;
+}
+.modal .btn {
+	border-radius: 2px;
+	min-width: 100px;
+}	
+.modal form label {
+	font-weight: normal;
+}	
+
+.modal .form-group {
+  margin-bottom: 20px;
+}
+
 @media (max-width: 480px) {
   .navbar {
     position: fixed;
@@ -104,6 +169,14 @@ body {
     width: 100%;
     z-index: 1000;
     padding: 5px;
+  }
+
+  .table-title {
+    background: #435d7d;
+    color: #fff;
+    min-width: 100%;
+    margin: -4px 0px 0px;
+    border-radius: 3px 3px 0 0;
   }
 }
 
@@ -115,4 +188,37 @@ body {
     z-index: 1000;
     padding: 7px;
   }
+
+  .table-responsive {
+    margin: 0px 0px 0px 0px;
+  }
+
+  .table-title {
+    background: #435d7d;
+    color: #fff;
+    padding-bottom: 3px;
+    padding-top:0px;
+    padding: 15px 15px 2px;
+    min-width: 100%;
+    margin: -10px 0px 0px;
+    border-radius: 3px 3px 0 0;
+  }
+
+  .table-wrapper {
+    background: #fff;
+    padding: 10px 12px 0px;
+    border-radius: 3px;
+    min-width: 1000px;
+    box-shadow: 0 1px 1px rgba(0,0,0,.05);
+  }
+
+  .table {
+    margin-top: 15px
+  }
+
+  .table-title .btn.btn-success {
+    margin: 0px 0 10px;
+    float: left;
+  }
+  
 }

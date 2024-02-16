@@ -19,7 +19,8 @@ module.exports = (sequelize, DataTypes) => {
     url3: DataTypes.STRING,
     url4: DataTypes.STRING,
     url5: DataTypes.STRING,
-    url6: DataTypes.STRING
+    url6: DataTypes.STRING,
+    nama_gedung: DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'DenahGedung',

@@ -167,10 +167,10 @@ async function initMap() {
     try {
         // menentukan icon cctv sesuai jenisnya
         let iconbase;
-        if (cctvs[i].type==="street"){
+        if (cctvs[i].type === "street"){
             iconbase = "/img/street_icon_marker_cctv1.png"
         }
-        else if(cctvs[i].type==="building"){
+        else if(cctvs[i].type === "building"){
             iconbase = "/img/building_icon_marker_cctv.png"
         }
         
