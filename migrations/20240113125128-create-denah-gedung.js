@@ -27,6 +27,9 @@ module.exports = {
       url6: {
         type: Sequelize.STRING
       },
+      nama_gedung: {
+        type: Sequelize.STRING
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
