@@ -13,7 +13,7 @@
             </div>
         </div>
         <div class="col-lg-2 col-12">
-            <a class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addCctvModal">Tambah CCTV</a>
+            <a class="btn btn-success" id="addCctvButton">Tambah CCTV</a>
         </div>
     </div>
 </div>
@@ -54,6 +54,25 @@
 
   <!-- mini map -->
   <div id="map" style="width:100%; height: 400px;"></div>
+
+  <!-- geocoding modal untuk lokasi cctv yang baru -->
+  <div class="modal" tabindex="-1" id="mapModal">
+    <div class="modal-dialog" style="max-width: 800px;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Pilih Lokasi CCTV</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div id="mapModalBody" style="width:100%; height: 400px;"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" id="saveLocation">Simpan</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- modal Tambah CCTV -->
   <div id="addCctvModal" class="modal fade">
