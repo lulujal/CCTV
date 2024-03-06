@@ -3,16 +3,27 @@ const {authentication} = require('../middlewares/authentication');
 const AdminController = require('../controllers/AdminController');
 const cctvController = require('../controllers/cctvController');
 const DenahGedungController = require('../controllers/DenahGedungController');
+const authorization = require('../middlewares/authorization');
+
+// add admin
+router.post('/admin', async (req, res) => {
+    try {
+        await AdminController.addAdmin(req, res);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: 'Internal Server Error'});
+    }
+});
 
 // login page
-router.get('/', (req, res) => {
+router.get('/login', (req, res) => {
     res.render('index', { loginError: null });
 });
-router.post('/', async (req, res) => {
+router.post('/login', async (req, res) => {
     try {
         const access_token = await AdminController.AdminLogin(req, res);
         res.cookie("access_token", access_token);
-        res.redirect('/map');
+        res.redirect('/admin-map');
     } catch (error) {
         res.status(401).render('index', { loginError: error.message });
     }
@@ -139,22 +150,43 @@ router.delete('/cctvroom/:id', async (req, res) => {
     }
 });
 
-router.use(authentication);
-
 // map page
-router.get('/map', async (req, res) => {
-    res.render('map');
+router.get('/', async (req, res) => {
+    res.render('map-public');
 });
 
-// get cctv
-router.get('/cctv', async (req, res) => {
+// cctv public page
+router.get('/cctv-public', async (req, res) => {
     try {
-        await cctvController.getCctvs(req, res);
+        await cctvController.getCctvPublic(req, res);
     } catch (error) {
         console.log(error);
-        res.status(500).json({message: 'Internal Server Error'});
+        res.status(500).json({ message: 'Internal Server Error' });
     }
 });
+
+router.use(authentication);
+
+// admin map page
+router.get('/admin-map', async (req, res) => {
+    res.render('map');
+});
+// get cctv
+router.get('/cctv',authorization ('superuser', 'E11',), async (req, res) => {
+    try {
+        console.log(req.user);
+      if (req.user && req.user.role) {
+        if (req.user.role === 'superuser') {
+          await cctvController.getCctvs(req, res);
+        } else if (req.user.role === 'E11') {
+          await cctvController.getCctvE11(req, res);
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: 'Internal Server Error' });
+    }
+  });
 
 // get cctvnormal untuk cctvnormal page
 router.get('/cctvnormal', function(req, res) {

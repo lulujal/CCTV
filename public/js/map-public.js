@@ -151,7 +151,7 @@ async function initMap() {
     // fetch data cctv dari database dengan API getCctvs
     const getCctvs = async () => {
         try {
-            const response = await fetch('/cctv');
+            const response = await fetch('/cctv-public');
     
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);

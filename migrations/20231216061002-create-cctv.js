@@ -21,6 +21,9 @@ module.exports = {
       url: {
         type: Sequelize.STRING
       },
+      access: {
+        type: Sequelize.STRING
+      },
       lat: {
         type: Sequelize.STRING
       },
