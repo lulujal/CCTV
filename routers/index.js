@@ -172,7 +172,7 @@ router.get('/admin-map', async (req, res) => {
     res.render('map');
 });
 // get cctv
-router.get('/cctv',authorization ('superuser', 'E11',), async (req, res) => {
+router.get('/cctv',authorization ('superuser', 'E11','digital center'), async (req, res) => {
     try {
         console.log(req.user);
       if (req.user && req.user.role) {
@@ -180,6 +180,8 @@ router.get('/cctv',authorization ('superuser', 'E11',), async (req, res) => {
           await cctvController.getCctvs(req, res);
         } else if (req.user.role === 'E11') {
           await cctvController.getCctvE11(req, res);
+        } else if (req.user.role === 'digital center') {
+          await cctvController.getCctvDC(req, res);
         }
       }
     } catch (error) {
@@ -208,6 +210,41 @@ router.get('/cctvdashboard/cctv', async (req, res) => {
 router.get('/cctvdashboard/cctvgedung', async (req, res) => {
     try {
         res.render('cctvgedung_dashboard');
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: 'Internal Server Error'});
+    }
+});
+
+// get superuser page
+router.get('/superuser', authorization('superuser'), function(req, res) {
+    res.render('superuser_dashboard');
+});
+
+// get admin data
+router.get('/admin', authorization('superuser'), async (req, res) => {
+    try {
+        await AdminController.getAdmin(req, res);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: 'Internal Server Error'});
+    }
+});
+
+// update admin data
+router.put('/admin/:id', authorization('superuser'), async (req, res) => {
+    try {
+        await AdminController.updateAdmin(req, res);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: 'Internal Server Error'});
+    }
+});
+
+// delete admin data
+router.delete('/admin/:id', authorization('superuser'), async (req, res) => {
+    try {
+        await AdminController.deleteAdmin(req, res);
     } catch (error) {
         console.log(error);
         res.status(500).json({message: 'Internal Server Error'});

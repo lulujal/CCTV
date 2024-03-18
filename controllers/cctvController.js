@@ -24,10 +24,24 @@ class cctvController {
             })
     }
 
+    static getCctvDC(req, res) {
+        Cctv.findAll({
+            where: {
+                access: 'digital center'
+            }
+        })
+            .then(data => {
+                res.status(200).json(data)
+            })
+            .catch(err => {
+                res.status(500).json(err)
+            })
+    }
+
     static getCctvPublic(req, res) {
         Cctv.findAll({
             where: {
-                access: 'public'
+                access: ['public', 'digital center']
             }
         })
             .then(data => {
