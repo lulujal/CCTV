@@ -54,14 +54,15 @@ class cctvController {
 
     static addCctv(req, res) {
         try{
-            const { content,nama,type,url,lat,lng} = req.body
+            const { content,nama,type,url,lat,lng,access} = req.body
             Cctv.create({
                 content,
                 nama,
                 type,
                 url,
                 lat,
-                lng
+                lng,
+                access
             })
             .then((result) => {
                 let response = {
@@ -72,8 +73,9 @@ class cctvController {
                     url: result.url,
                     lat: result.lat,
                     lng: result.lng,
+                    access: result.access,
                     createdAt: result.createdAt,
-                    updatedAt: result.updatedAt,
+                    updatedAt: result.updatedAt   
                 }
                 res.status(201).json(response)
             })
@@ -86,14 +88,15 @@ class cctvController {
     static updateCctv(req, res) {
         try{
             const id = req.params.id
-            const { content,nama,type,url,lat,lng} = req.body
+            const { content,nama,type,url,lat,lng,access} = req.body
             Cctv.update({
                 content,
                 nama,
                 type,
                 url,
                 lat,
-                lng
+                lng,
+                access
             },{
                 where: {
                     id: id

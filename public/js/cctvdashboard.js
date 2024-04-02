@@ -64,6 +64,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <td class="url">${cctv.url}</td>
             <td class="lat">${cctv.lat}</td>
             <td class="lng">${cctv.lng}</td>
+            <td class="access">${cctv.access}</td>
             <td>
             <div class="d-flex justify-content-around">
             <a class="btn btn-success btn-sm edit-button" data-bs-toggle="modal" data-bs-target="#editCctvModal" style="margin-right:5px;" >
@@ -121,6 +122,7 @@ document.getElementById('addCctvForm').addEventListener('submit', function(e) {
     var url = document.getElementById('url').value;
     var lat = document.getElementById('lat').value;
     var lng = document.getElementById('lng').value;
+    var access = document.getElementById('access').value;
   
     var data = {
       content: content,
@@ -128,7 +130,8 @@ document.getElementById('addCctvForm').addEventListener('submit', function(e) {
       type: type,
       url: url,
       lat: lat,
-      lng: lng
+      lng: lng,
+      access: access,
     };
   
     fetch('/cctv', {
@@ -166,6 +169,7 @@ document.querySelector('#cctv-tbody').addEventListener('click', function(e) {
       var url = row.querySelector('.url').textContent;
       var lat = row.querySelector('.lat').textContent;
       var lng = row.querySelector('.lng').textContent;
+      var access = row.querySelector('.access').textContent;
   
       document.getElementById('edit-id').value = id;
       document.getElementById('edit-content').value = content;
@@ -174,6 +178,7 @@ document.querySelector('#cctv-tbody').addEventListener('click', function(e) {
       document.getElementById('edit-url').value = url;
       document.getElementById('edit-lat').value = lat;
       document.getElementById('edit-lng').value = lng;
+      document.getElementById('edit-access').value = access;
     }
   });
 
@@ -187,6 +192,7 @@ document.getElementById('editCctvForm').addEventListener('submit', function(e) {
     var url = document.getElementById('edit-url').value;
     var lat = document.getElementById('edit-lat').value;
     var lng = document.getElementById('edit-lng').value;
+    var access = document.getElementById('edit-access').value;
   
     var data = {
       content: content,
@@ -194,7 +200,8 @@ document.getElementById('editCctvForm').addEventListener('submit', function(e) {
       type: type,
       url: url,
       lat: lat,
-      lng: lng
+      lng: lng,
+      access: access,
     };
   
     fetch('/cctv/' + id, {

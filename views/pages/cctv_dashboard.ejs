@@ -30,6 +30,7 @@
                     <th>url</th>
                     <th>latitude</th>
                     <th>longitude</th>
+                    <th>Akses</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
@@ -108,6 +109,14 @@
                 <label for="lng">Longitude</label>
                 <input type="text" class="form-control" id="lng" required>
                 </div>
+            <div class="form-group">
+                  <label for="access">Akses</label>
+                  <select class="form-select" id="access" name="access" required>
+                      <option value="public">CCTV Publik</option>
+                      <option value="digital center">Admin Digital Center</option>
+                      <option value="E11">Admin E11</option>
+                  </select>
+              </div>
           </div>
             <div class="modal-footer">
                 <input type="button" class="btn btn-default" data-bs-dismiss="modal" value="Batal">
@@ -152,6 +161,14 @@
                 <label for="edit-lng">Longitude</label>
                 <input type="text" class="form-control" id="edit-lng" required>
             </div>
+            <div class="form-group">
+              <label for="edit-access">Akses</label>
+              <select class="form-select" id="edit-access" name="edit-access" required>
+                  <option value="public">CCTV Publik</option>
+                  <option value="digital center">Admin Digital Center</option>
+                  <option value="E11">Admin E11</option>
+              </select>
+          </div>
         </div>
         <div class="modal-footer">
             <input type="button" class="btn btn-default" data-bs-dismiss="modal" value="Batal">
