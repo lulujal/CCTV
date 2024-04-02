@@ -165,6 +165,12 @@ router.get('/cctv-public', async (req, res) => {
     }
 });
 
+// get cctvnormal untuk cctvnormal page
+router.get('/cctvnormal', function(req, res) {
+    var url = decodeURIComponent(req.query.url);
+    res.render('cctvnormal', { url: url });
+});
+
 router.use(authentication);
 
 // admin map page
@@ -190,11 +196,7 @@ router.get('/cctv',authorization ('superuser', 'E11','digital center'), async (r
     }
   });
 
-// get cctvnormal untuk cctvnormal page
-router.get('/cctvnormal', function(req, res) {
-    var url = decodeURIComponent(req.query.url);
-    res.render('cctvnormal', { url: url });
-});
+
 
 // get cctvdashboard untuk cctv_dashboard page
 router.get('/cctvdashboard/cctv', async (req, res) => {
