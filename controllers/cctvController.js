@@ -10,16 +10,59 @@ class cctvController {
             })
     }
 
+    static getCctvE11(req, res) {
+        Cctv.findAll({
+            where: {
+                access: 'E11'
+            }
+        })
+            .then(data => {
+                res.status(200).json(data)
+            })
+            .catch(err => {
+                res.status(500).json(err)
+            })
+    }
+
+    static getCctvDC(req, res) {
+        Cctv.findAll({
+            where: {
+                access: 'digital center'
+            }
+        })
+            .then(data => {
+                res.status(200).json(data)
+            })
+            .catch(err => {
+                res.status(500).json(err)
+            })
+    }
+
+    static getCctvPublic(req, res) {
+        Cctv.findAll({
+            where: {
+                access: ['public', 'digital center']
+            }
+        })
+            .then(data => {
+                res.status(200).json(data)
+            })
+            .catch(err => {
+                res.status(500).json(err)
+            })
+    }
+
     static addCctv(req, res) {
         try{
-            const { content,nama,type,url,lat,lng} = req.body
+            const { content,nama,type,url,lat,lng,access} = req.body
             Cctv.create({
                 content,
                 nama,
                 type,
                 url,
                 lat,
-                lng
+                lng,
+                access
             })
             .then((result) => {
                 let response = {
@@ -30,8 +73,9 @@ class cctvController {
                     url: result.url,
                     lat: result.lat,
                     lng: result.lng,
+                    access: result.access,
                     createdAt: result.createdAt,
-                    updatedAt: result.updatedAt,
+                    updatedAt: result.updatedAt   
                 }
                 res.status(201).json(response)
             })
@@ -44,14 +88,15 @@ class cctvController {
     static updateCctv(req, res) {
         try{
             const id = req.params.id
-            const { content,nama,type,url,lat,lng} = req.body
+            const { content,nama,type,url,lat,lng,access} = req.body
             Cctv.update({
                 content,
                 nama,
                 type,
                 url,
                 lat,
-                lng
+                lng,
+                access
             },{
                 where: {
                     id: id

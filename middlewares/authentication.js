@@ -8,15 +8,15 @@ async function authentication(req, res, next){
             throw {message: 'authentication failed', statusCode: 401}
         }
         const decoded = verifyToken(access_token)
-        const admin = await Admin.findOne({
+        const user = await Admin.findOne({
             where:{
                 username: decoded.username
             }
         })
-        if (!admin){
+        if (!user){
             throw {message: 'authentication failed', statusCode: 401}
         }
-        req.admin = decoded
+        req.user = decoded
         next()
     } catch (error) {
         next(error)

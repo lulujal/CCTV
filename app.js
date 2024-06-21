@@ -4,7 +4,6 @@ const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const app = express();
-const port = process.env.PORT || 3000;
 const router = require('./routers/index');
 
 app.use(express.urlencoded({extended:false}));
@@ -18,8 +17,6 @@ app.set('views', 'views/pages');
 
 app.use(router);
 
-app.listen(port, () => {
-    console.log(`Example app listening at ${port}`)
-})
-
-
+app.listen(2443, () => {
+    console.log(`App is running at 2443 / in ${app.get('env')} mode`);
+  });
