@@ -165,6 +165,9 @@ async function initMap() {
     }
 
     const cctvs = await getCctvs();
+
+    // variabel markers untuk cluster cctv
+    let markers = [];
    
     // menampilkan cctv pada map
     let currentInfoWindow = null;
@@ -179,12 +182,19 @@ async function initMap() {
             iconbase = "/img/building_icon_marker_cctv.png"
         }
         
+
         // membuat marker cctv
         const marker = new google.maps.Marker({
             position: {lat: parseFloat(cctvs[i].lat), lng: parseFloat(cctvs[i].lng)},
             map: map,
             icon: iconbase,
         });
+
+        // menambahkan marker ke array markers
+        markers.push(marker);
+        
+        // clustering marker cctv
+        const markerCluster = new markerClusterer.MarkerClusterer({ markers, map });
 
         // membuat fungsi info window untuk cctv
         function createCustomInfoWindow(content){
