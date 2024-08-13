@@ -1,3 +1,4 @@
+import { MarkerClusterer } from "@googlemaps/markerclusterer";
 async function initMap() {
     // inisiasi variabel area unnes dan center dari map
     const unnes = { lat:  -7.049756, lng: 110.396445 }
@@ -193,8 +194,7 @@ async function initMap() {
         // menambahkan marker ke array markers
         markers.push(marker);
         
-        // clustering marker cctv
-        const markerCluster = new markerClusterer.MarkerClusterer({ markers, map });
+        
 
         // membuat fungsi info window untuk cctv
         function createCustomInfoWindow(content){
@@ -309,6 +309,15 @@ async function initMap() {
         console.log(error);
     }
 }
+    // clustering marker cctv
+    const markerCluster = new MarkerClusterer({map, markers,
+        Algorithm: "grid",
+        gridSize: 2,
+        maxZoom: 15,
+        minimumClusterSize: 2,
+        imagePath: "https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m",
+    })
+
     document.addEventListener("DOMContentLoaded", initMap);
     
 }
