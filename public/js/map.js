@@ -1,4 +1,3 @@
-import MarkerClusterer from '@google/markerclustererplus';
 async function initMap() {
     // inisiasi variabel area unnes dan center dari map
     const unnes = { lat:  -7.049756, lng: 110.396445 }
