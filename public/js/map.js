@@ -137,6 +137,9 @@ async function initMap() {
         {lng: 110.3897028, lat: -7.0480879}
     ]
 
+    // dbscan data variabel
+    let data = area.map(point => [point.lat, point.lng]);
+
     let polygon = new google.maps.Polygon({
         paths: area,
         strokeColor: "#0000FF",
@@ -165,10 +168,7 @@ async function initMap() {
     }
 
     const cctvs = await getCctvs();
-
-    // variabel markers untuk cluster cctv
-    let markers = [];
-   
+  
     // menampilkan cctv pada map
     let currentInfoWindow = null;
     for (let i = 0; i < cctvs.length; i++) {
@@ -189,16 +189,36 @@ async function initMap() {
             map: map,
             icon: iconbase,
         });
+       
+        // dbcsan clustering
+        let markers = cctvs.map (cctv => [parseFloat(cctv.lat), parseFloat(cctv.lng)]);
+       
+        // perform dbscan clustering
+        const dbscan = require('dbscan');
+        let epsilon = 0.1; // 0.0001 derajat = 11.1 meter
+        let minPoints = 2; // minimal 2 titik
+        let clustering = new dbscan.DBSCAN(markers, epsilon, minPoints);
+        let clusters = clustering.clusters;
 
+        // membuat marker untuk setiap cluster
+        clusters.forEach((cluster, i)=>{
+            // menghitung centroid dari cluster
+            let latSum = 0;
+            let lngSum = 0;
+            cluster.forEach(index => {
+                latSum += cctvs[index].lat;
+                lngSum += cctvs[index].lng;
+            })
+            let centroid = {lat: latSum / cluster.length, lng: lngSum / cluster.length};
         
-        // // menambahkan marker ke array markers
-        // markers.push(marker);
-        
-        // // clustering marker cctv
-        //     const markerCluster = new MarkerClusterer(map, markers, {
-        //         maxZoom: 23,
-        //         minimumClusterSize: 2
-        //     });
+            // membuat marker untuk setiap cluster
+            let clusterMarker = new google.maps.Marker({
+                position: centroid,
+                map: map,
+                title: `Cluster ${i+1}`,
+                icon: "/img/cluster_icon_marker_cctv.png",
+            })     
+        })
 
         // membuat fungsi info window untuk cctv
         function createCustomInfoWindow(content){
