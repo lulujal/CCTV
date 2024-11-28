@@ -171,6 +171,12 @@ router.get('/cctvnormal', function(req, res) {
     res.render('cctvnormal', { url: url });
 });
 
+// get cctvobjek untuk cctv yolo
+router.get('/cctvyolo', function(req, res) {
+    var url = decodeURIComponent(req.query.url);
+    res.render('cctvyolo', { url: url });
+});
+
 router.use(authentication);
 
 // admin map page

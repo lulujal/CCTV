@@ -1,3 +1,4 @@
+import { MarkerClusterer, SuperClusterAlgorithm } from "@googlemaps/markerclusterer";
 async function initMap() {
     // inisiasi variabel area unnes dan center dari map
     const unnes = { lat:  -7.049756, lng: 110.396445 }
@@ -165,9 +166,10 @@ async function initMap() {
     }
 
     const cctvs = await getCctvs();
-  
+    
     // menampilkan cctv pada map
     let currentInfoWindow = null;
+    const markers = []
     for (let i = 0; i < cctvs.length; i++) {
     try {
         // menentukan icon cctv sesuai jenisnya
@@ -179,7 +181,6 @@ async function initMap() {
             iconbase = "/img/building_icon_marker_cctv.png"
         }
         
-
         // membuat marker cctv
         const marker = new google.maps.Marker({
             position: {lat: parseFloat(cctvs[i].lat), lng: parseFloat(cctvs[i].lng)},
@@ -215,13 +216,9 @@ async function initMap() {
         <div id="bodyContent">
         <p>${cctvs[i].content}</p>
         <p>pilih jenis cctv</p>
-        ${
-            cctvs[i].type === "street" ? createButton("CCTV NORMAL", "cctvnormal", "btn btn-primary"):
-            cctvs[i].type === "street" ? createButton("CCTV THERMAL", "cctvthermal", "btn btn-primary"):
-            cctvs[i].type === "street" ? createButton("CCVT HELM Recognition", "cctvhelm", "btn btn-primary"): 
-            cctvs[i].type === "building" ? createButton("Denah Gedung", "denahButton", "btn btn-primary") :
-            ""
-        }
+        ${createButton("CCTV NORMAL", "cctvnormal", "btn btn-primary")}
+        ${createButton("CCTV YOLOv8", "cctvobjek", "btn btn-primary")}
+        ${cctvs[i].type === "building" ? createButton("Denah Gedung", "denahButton", "btn btn-primary") : ""}
         </div>
         </div>
         `
@@ -234,6 +231,13 @@ async function initMap() {
         function cctvNormalClick(){
             console.log("cctv normal clicked");
             window.location.href = "/cctvnormal?url=" + encodeURIComponent(cctvs[i].url);
+        }
+
+        // handler cctv objek ketika di klik
+        function cctvObjekClick(){
+            console.log("cctv objek clicked");
+            const videoFeedUrl = "http://127.0.0.1:5000/video_feed?rtsp_url=" + cctvs[i].url;
+            window.location.href = "/cctvyolo?url=" + encodeURIComponent(videoFeedUrl);
         }
         
         // handler cctv gedung ketika di klik
@@ -257,6 +261,10 @@ async function initMap() {
                 const cctvNormalButton = document.getElementById("cctvnormal");
                 if (cctvNormalButton) {
                     cctvNormalButton.addEventListener("click", cctvNormalClick);
+                } 
+                const cctvObjekButton = document.getElementById("cctvobjek");
+                if (cctvObjekButton) {
+                    cctvObjekButton.addEventListener("click", cctvObjekClick);
                 }
         });
             });
@@ -295,11 +303,23 @@ async function initMap() {
          // event listener untuk menutup infowindow
          google.maps.event.addListener(map, "click", function () {
             infoWindow.close();
-          }); 
+          });
+
+        markers.push(marker); 
     }catch (error) {
         console.log(error);
     }
 }
+    new MarkerClusterer({
+        map, 
+        markers,
+        algorithm: new SuperClusterAlgorithm({
+            minClusterSize: 2,
+            maxClusterRadius: 20,
+            minClusterZoom: 0,
+            maxClusterZoom: 21,
+        }),
+    });
     document.addEventListener("DOMContentLoaded", initMap);
     
 }
