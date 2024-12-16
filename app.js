@@ -18,6 +18,4 @@ app.set('views', 'views/pages');
 
 app.use(router);
 
-app.listen(2443, () => {
-    console.log(`App is running at 2443 / in ${app.get('env')} mode`);
-  });
+module.exports = app;

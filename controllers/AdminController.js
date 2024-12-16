@@ -1,35 +1,41 @@
-const  {Admin} = require('../models')
-const {hashPassword} = require('../helpers/bcrypt')
-const { comparePassword } = require("../helpers/bcrypt");
-const { generateToken } = require("../helpers/jwt");
-let access_token;
+const { Admin } = require('../models');
+const { hashPassword, comparePassword } = require('../helpers/bcrypt');
+const { generateToken } = require('../helpers/jwt');
 
 class AdminController {
     static async AdminLogin(req, res) {
-        const { username, password } = req.body;
-        const admin = await Admin.findOne({
-            where:{
-                username
+        try {
+            const { username, password } = req.body;
+            console.log('Login attempt:', username);
+            const admin = await Admin.findOne({
+                where: {
+                    username
+                }
+            });
+            if (!admin) {
+                console.log('Admin not found');
+                return { statusCode: 401, body: { message: "Pastikan username benar" } };
             }
-        });
-        if (!admin){
-            throw new Error("Pastikan username benar");
+            const isCorrect = await comparePassword(password, admin.password);
+            if (!isCorrect) {
+                console.log('Incorrect password');
+                return { statusCode: 401, body: { message: "Pastikan password benar" } };
+            }
+            let payload = {
+                id: admin.id,
+                username: admin.username,
+                role: admin.role,
+            };
+            const access_token = generateToken(payload);
+            console.log('Login successful:', payload);
+            return { statusCode: 200, body: { access_token } };
+        } catch (error) {
+            console.log('Login error:', error);
+            return { statusCode: 500, body: { message: 'Internal Server Error' } };
         }
-        const isCorrect = comparePassword(password, admin.password);
-        if (!isCorrect){
-            throw new Error("Pastikan password benar");
-        }
-        let payload = {
-            id: admin.id,
-            username: admin.username,
-            role: admin.role,
-        };
-        const access_token = generateToken(payload);
-        return access_token;
     }
 
     static AdminLogout(req, res) {
-        access_token = null;
         res.clearCookie("access_token");
         return res.redirect('/');
     }
@@ -39,25 +45,26 @@ class AdminController {
             const users = await Admin.findAll();
             return res.status(200).json(users);
         } catch (error) {
-            res.status(500).json({message: 'Internal Server Error'});
+            return res.status(500).json({ message: 'Internal Server Error' });
         }
     }
 
     static async updateAdmin(req, res) {
-      try {  const { id } = req.params;
-        const { username, password, role } = req.body;
-        const admin = await Admin.update({
-            username,
-            password: await hashPassword(password),
-            role
-        }, {
-            where: {
-                id
-            }
-        });
-        return res.status(200).json(admin);
-    } catch (error) {
-        res.status(500).json({message: 'Internal Server Error'});
+        try {
+            const { id } = req.params;
+            const { username, password, role } = req.body;
+            const admin = await Admin.update({
+                username,
+                password: await hashPassword(password),
+                role
+            }, {
+                where: {
+                    id
+                }
+            });
+            return res.status(200).json(admin);
+        } catch (error) {
+            return res.status(500).json({ message: 'Internal Server Error' });
         }
     }
 
@@ -71,19 +78,23 @@ class AdminController {
             });
             return res.status(200).json(admin);
         } catch (error) {
-            res.status(500).json({message: 'Internal Server Error'});
+            return res.status(500).json({ message: 'Internal Server Error' });
         }
     }
 
     static async addAdmin(req, res) {
-        const { username, password, role } = req.body;
-        const admin = await Admin.create({
-            username,
-            password: await hashPassword(password),
-            role
-        });
-        return res.status(201).json(admin);
+        try {
+            const { username, password, role } = req.body;
+            const admin = await Admin.create({
+                username,
+                password: await hashPassword(password),
+                role
+            });
+            return res.status(201).json(admin);
+        } catch (error) {
+            return res.status(500).json({ message: 'Internal Server Error' });
+        }
     }
-  }
-  
-  module.exports = AdminController;
+}
+
+module.exports = AdminController;

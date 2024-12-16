@@ -19,13 +19,22 @@ router.post('/admin', async (req, res) => {
 router.get('/login', (req, res) => {
     res.render('index', { loginError: null });
 });
+
 router.post('/login', async (req, res) => {
     try {
-        const access_token = await AdminController.AdminLogin(req, res);
-        res.cookie("access_token", access_token);
-        res.redirect('/admin-map');
+        const loginResponse = await AdminController.AdminLogin(req, res);
+
+        const { statusCode, body } = loginResponse;
+
+        if (statusCode === 200) {
+            res.cookie("access_token", body.access_token, { httpOnly: true });
+            return res.redirect('/admin-map');
+        } else {
+            return res.status(statusCode).json(body);
+        }
     } catch (error) {
-        res.status(401).render('index', { loginError: error.message });
+        console.log('Login error:', error);
+        return res.status(500).json({ message: 'Internal Server Error' });
     }
 });
 
@@ -184,7 +193,7 @@ router.get('/admin-map', async (req, res) => {
     res.render('map');
 });
 // get cctv
-router.get('/cctv',authorization ('superuser', 'E11','digital center'), async (req, res) => {
+router.get('/cctv', authorization('superuser', 'E11','digital center'), async (req, res) => {
     try {
         console.log(req.user);
       if (req.user && req.user.role) {

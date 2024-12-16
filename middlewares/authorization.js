@@ -6,8 +6,12 @@ function authorization(...allowedRoles) {
       const { role } = user;
 
       if (!allowedRoles.includes(role)) {
+        console.log('Unauthorized role:', role);
         return res.status(401).json({ message: 'Unauthorized' });
       }
+    } else {
+      console.log('No user in request');
+      return res.status(401).json({ message: 'Unauthorized' });
     }
 
     next();

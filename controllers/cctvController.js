@@ -1,13 +1,12 @@
 const { Cctv } = require('../models')
 class cctvController {
-    static getCctvs(req, res) {
-        Cctv.findAll()
-            .then(data => {
-                res.status(200).json(data)
-            })
-            .catch(err => {
-                res.status(500).json(err)
-            })
+        static async getCctvs(req, res) {
+        try {
+            const cctvs = await Cctv.findAll();
+            res.status(200).json(cctvs);
+        } catch (err) {
+            res.status(500).json({ message: err.message });
+        }
     }
 
     static getCctvE11(req, res) {
@@ -20,7 +19,7 @@ class cctvController {
                 res.status(200).json(data)
             })
             .catch(err => {
-                res.status(500).json(err)
+                res.status(500).json({message: err.message})
             })
     }
 
@@ -34,7 +33,7 @@ class cctvController {
                 res.status(200).json(data)
             })
             .catch(err => {
-                res.status(500).json(err)
+                res.status(500).json({message: err.message})
             })
     }
 
@@ -48,68 +47,57 @@ class cctvController {
                 res.status(200).json(data)
             })
             .catch(err => {
-                res.status(500).json(err)
+                res.status(500).json({message: err.message})
             })
     }
 
     static addCctv(req, res) {
-        try{
-            const { content,nama,type,url,lat,lng,access} = req.body
-            Cctv.create({
-                content,
-                nama,
-                type,
-                url,
-                lat,
-                lng,
-                access
-            })
-            .then((result) => {
-                let response = {
-                    id: result.id,
-                    content: result.content,
-                    nama: result.nama,
-                    type: result.type,
-                    url: result.url,
-                    lat: result.lat,
-                    lng: result.lng,
-                    access: result.access,
-                    createdAt: result.createdAt,
-                    updatedAt: result.updatedAt   
-                }
-                res.status(201).json(response)
-            })
-        }catch(err){
-            console.log(err);
-            res.status(500).json(err)
-        }
+        const { content, nama, type, url, lat, lng, access } = req.body;
+        Cctv.create({
+            content,
+            nama,
+            type,
+            url,
+            lat,
+            lng,
+            access
+        })
+        .then((result) => {
+            let response = {
+                id: result.id,
+                content: result.content,
+                nama: result.nama,
+                type: result.type,
+                url: result.url,
+                lat: result.lat,
+                lng: result.lng,
+                access: result.access,
+                createdAt: result.createdAt,
+                updatedAt: result.updatedAt   
+            };
+            res.status(201).json(response);
+        })
+        .catch(err => {
+            res.status(500).json({ message: err.message });
+        });
     }
 
     static updateCctv(req, res) {
-        try{
-            const id = req.params.id
-            const { content,nama,type,url,lat,lng,access} = req.body
-            Cctv.update({
-                content,
-                nama,
-                type,
-                url,
-                lat,
-                lng,
-                access
-            },{
-                where: {
-                    id: id
-                },
-                returning: true
-            })
-            .then((result) => {
-                res.status(200).json(result[1][0])
-            })
-        }catch(err){
-            console.log(err);
-            res.status(500).json(err)
-        }
+        const { id } = req.params;
+        const { content, nama, type, url, lat, lng, access } = req.body;
+        Cctv.update(
+            { content, nama, type, url, lat, lng, access },
+            { where: { id }, returning: true }
+        )
+        .then(([rowsUpdate, [updatedCctv]]) => {
+            if (rowsUpdate === 0) {
+                return res.status(404).json({ message: 'CCTV not found' });
+            }
+            res.status(200).json(updatedCctv);
+        })
+        .catch(err => {
+            res.status(500).json({ message: err.message });
+        });
     }
 
     static deletecctv(req, res) {
@@ -125,7 +113,7 @@ class cctvController {
             })
         }catch(err){
             console.log(err);
-            res.status(500).json(err)
+            res.status(500).json({message: err.message})
         }
     }
 }
