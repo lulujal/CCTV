@@ -3,6 +3,8 @@ const AdminController = require('../controllers/AdminController');
 const httpMocks = require('node-mocks-http');
 const { hashPassword, comparePassword } = require('../helpers/bcrypt');
 const { generateToken } = require('../helpers/jwt');
+const request = require('supertest');
+const app = require('../app');
 const bcrypt = require('bcrypt');
 
 jest.mock('../models');
@@ -30,20 +32,20 @@ describe('AdminController', () => {
             comparePassword.mockResolvedValue(true);
             generateToken.mockReturnValue('token');
 
-            await AdminController.AdminLogin(req, res);
+            const loginResponse = await AdminController.AdminLogin(req, res);
 
-            expect(res.status).toHaveBeenCalledWith(200);
-            expect(res.json).toHaveBeenCalledWith({ access_token: 'token' });
+            expect(loginResponse.statusCode).toBe(200);
+            expect(loginResponse.body).toHaveProperty('access_token', 'token');
         });
 
         it('should return 401 if username is incorrect', async () => {
             req.body = { username: 'wrong', password: 'password' };
             Admin.findOne.mockResolvedValue(null);
 
-            await AdminController.AdminLogin(req, res);
+            const loginResponse = await AdminController.AdminLogin(req, res);
 
-            expect(res.status).toHaveBeenCalledWith(401);
-            expect(res.json).toHaveBeenCalledWith({ message: "Pastikan username benar" });
+            expect(loginResponse.statusCode).toBe(401);
+            expect(loginResponse.body).toHaveProperty('message', "Pastikan username benar");
         });
 
         it('should return 401 if password is incorrect', async () => {
@@ -53,21 +55,22 @@ describe('AdminController', () => {
             Admin.findOne.mockResolvedValue(admin);
             comparePassword.mockResolvedValue(false);
 
-            await AdminController.AdminLogin(req, res);
+            const loginResponse = await AdminController.AdminLogin(req, res);
 
-            expect(res.status).toHaveBeenCalledWith(401);
-            expect(res.json).toHaveBeenCalledWith({ message: "Pastikan password benar" });
+            expect(loginResponse.statusCode).toBe(401);
+            expect(loginResponse.body).toHaveProperty('message', "Pastikan password benar");
         });
 
         it('should return 500 if there is a server error', async () => {
             req.body = { username: 'admin', password: 'password' };
             Admin.findOne.mockRejectedValue(new Error('Server error'));
 
-            await AdminController.AdminLogin(req, res);
+            const loginResponse = await AdminController.AdminLogin(req, res);
 
-            expect(res.status).toHaveBeenCalledWith(500);
-            expect(res.json).toHaveBeenCalledWith({ message: 'Internal Server Error' });
+            expect(loginResponse.statusCode).toBe(500);
+            expect(loginResponse.body).toHaveProperty('message', 'Internal Server Error');
         });
+
     });
 
     describe('AdminLogout', () => {

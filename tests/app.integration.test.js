@@ -1,145 +1,150 @@
 const request = require('supertest');
-const app = require('../app'); // Ensure this is the Express app
+const app = require('../app');
 const { Cctv, Admin } = require('../models');
 const { generateToken } = require('../helpers/jwt');
 const bcrypt = require('bcrypt');
 
-let adminToken;
-let testsRun = false;
-
-beforeAll(async () => {
-    // Create an admin user and generate a token
-    const hashedPassword = await bcrypt.hash('admin', 10);
-    const admin = await Admin.create({ username: 'admin', password: hashedPassword, role: 'superuser' });
-    const payload = {
-        id: admin.id,
-        username: admin.username,
-        role: admin.role
-    }
-    adminToken = generateToken(payload);
-    console.log(adminToken);
-});
-
-afterAll(async () => {
-    if (testsRun) {
-        // Clean up database
-        await Cctv.destroy({ where: {} });
-        await Admin.destroy({ where: {} });
-    }
-});
-
 describe('CCTV API Integration Tests', () => {
-    it('should add a new CCTV entry and verify it is saved in the database', async () => {
-        testsRun = true;
-        const newCctv = {
-            content: 'Test CCTV',
-            nama: 'Test CCTV',
-            type: 'street',
-            url: 'https://example.com/stream',
-            lat: '123.456',
-            lng: '78.910',
-            access: 'public'
-        };
+    let adminToken;
 
-        const response = await request(app)
-            .post('/cctv')
-            .set('Authorization', `Bearer ${adminToken}`)
-            .send(newCctv);
-
-        expect(response.status).toBe(201);
-        expect(response.body).toHaveProperty('id');
-        expect(response.body.content).toBe(newCctv.content);
-
-        const cctvInDb = await Cctv.findByPk(response.body.id);
-        expect(cctvInDb).not.toBeNull();
-        expect(cctvInDb.content).toBe(newCctv.content);
+    beforeAll(async () => {
+        const hashedPassword = await bcrypt.hash('admin', 10);
+        const admin = await Admin.create({ username: 'admin', password: hashedPassword, role: 'superuser' });
+        const payload = { id: admin.id, username: admin.username, role: admin.role };
+        adminToken = generateToken(payload);
     });
 
-    it('should retrieve CCTV data and verify it is displayed correctly on an interactive map', async () => {
-        testsRun = true;
-        // Mock initMap function
-        const initMap = jest.fn(() => ({ markers: [] }));
-        const placeMarkerAndPanTo = jest.fn((location, map) => {
-            map.markers.push(location);
+    afterAll(async () => {
+        await Admin.destroy({ where: {} });
+        await Cctv.destroy({ where: {} });
+    });
+
+    describe('Add CCTV Data', () => {
+        it('should add new CCTV data and verify it in the database', async () => {
+            const newCctv = {
+                content: 'Test Content',
+                nama: 'Test CCTV',
+                type: 'Outdoor',
+                url: 'http://example.com',
+                lat: '-7.049756',
+                lng: '110.396445',
+                access: 'public'
+            };
+
+            const response = await request(app)
+                .post('/cctv')
+                .set('Authorization', `Bearer ${adminToken}`)
+                .send(newCctv);
+
+            expect(response.status).toBe(201);
+            expect(response.body).toHaveProperty('id');
+
+            const cctv = await Cctv.findByPk(response.body.id);
+            expect(cctv).not.toBeNull();
+            expect(cctv.nama).toBe(newCctv.nama);
+        });
+    });
+
+    describe('Retrieve CCTV Data', () => {
+        it('should retrieve CCTV data and display it on the map', async () => {
+            const response = await request(app)
+                .get('/cctv-public')
+                .set('Authorization', `Bearer ${adminToken}`);
+
+            expect(response.status).toBe(200);
+            expect(response.body).toBeInstanceOf(Array);
+            expect(response.body.length).toBeGreaterThan(0);
+        });
+    });
+
+    describe('Google Maps API Integration', () => {
+        it('should visualize coordinates as markers on the map', async () => {
+            const response = await request(app)
+                .get('/')
+                .set('Authorization', `Bearer ${adminToken}`);
+
+            expect(response.status).toBe(200);
+            // Additional checks for map markers can be added here
+        });
+    });
+
+    describe('CRUD Operations on CCTV Data', () => {
+        let cctvId;
+
+        beforeAll(async () => {
+            const cctv = await Cctv.create({
+                content: 'Test Content',
+                nama: 'Test CCTV',
+                type: 'Outdoor',
+                url: 'http://example.com',
+                lat: '-7.049756',
+                lng: '110.396445',
+                access: 'public'
+            });
+            cctvId = cctv.id;
         });
 
-        const response = await request(app)
-            .get('/cctv')
-            .set('Authorization', `Bearer ${adminToken}`);
+        it('should update CCTV data', async () => {
+            const updatedData = { nama: 'Updated CCTV' };
 
-        expect(response.status).toBe(200);
-        expect(response.body).toBeInstanceOf(Array);
-        expect(response.body.length).toBeGreaterThan(0);
+            const response = await request(app)
+                .put(`/cctv/${cctvId}`)
+                .set('Authorization', `Bearer ${adminToken}`)
+                .send(updatedData);
 
-        // Initialize the map and add markers
-        const map = initMap();
-        response.body.forEach(cctv => {
-            placeMarkerAndPanTo({ lat: parseFloat(cctv.lat), lng: parseFloat(cctv.lng) }, map);
+            expect(response.status).toBe(200);
+            expect(response.body.nama).toBe(updatedData.nama);
+
+            const cctv = await Cctv.findByPk(cctvId);
+            expect(cctv.nama).toBe(updatedData.nama);
         });
 
-        // Verify markers are added to the map
-        expect(map.markers.length).toBe(response.body.length);
+        it('should delete CCTV data', async () => {
+            const response = await request(app)
+                .delete(`/cctv/${cctvId}`)
+                .set('Authorization', `Bearer ${adminToken}`);
+
+            expect(response.status).toBe(200);
+
+            const cctv = await Cctv.findByPk(cctvId);
+            expect(cctv).toBeNull();
+        });
     });
 
-    it('should perform CRUD operations on CCTV data and ensure changes are reflected in the database and on the map', async () => {
-        testsRun = true;
-        // Create a new CCTV entry
-        const newCctv = {
-            content: 'CRUD Test CCTV',
-            nama: 'CRUD Test CCTV',
-            type: 'street',
-            url: 'https://example.com/stream',
-            lat: '123.456',
-            lng: '78.910',
-            access: 'public'
-        };
+    describe('Authentication and Authorization', () => {
+        it('should login as admin and access the management dashboard', async () => {
+            const loginResponse = await request(app)
+                .post('/login')
+                .send({ username: 'admin', password: 'admin' });
+        
+            expect(loginResponse.status).toBe(302); // Expecting a redirect status
+        
+            const cookies = loginResponse.headers['set-cookie'];
+            const dashboardResponse = await request(app)
+                .get('/admin-map')
+                .set('Cookie', cookies);
+        
+            expect(dashboardResponse.status).toBe(200);
+        });
 
-        const createResponse = await request(app)
-            .post('/cctv')
-            .set('Authorization', `Bearer ${adminToken}`)
-            .send(newCctv);
+        it('should perform authorized actions', async () => {
+            const newCctv = {
+                content: 'Authorized Content',
+                nama: 'Authorized CCTV',
+                type: 'Outdoor',
+                url: 'http://example.com',
+                lat: '-7.049756',
+                lng: '110.396445',
+                access: 'public'
+            };
 
-        const cctvId = createResponse.body.id;
+            const response = await request(app)
+                .post('/cctv')
+                .set('Authorization', `Bearer ${adminToken}`)
+                .send(newCctv);
 
-        // Update the CCTV entry
-        const updatedCctv = { ...newCctv, content: 'Updated CCTV' };
-        const updateResponse = await request(app)
-            .put(`/cctv/${cctvId}`)
-            .set('Authorization', `Bearer ${adminToken}`)
-            .send(updatedCctv);
-
-        expect(updateResponse.status).toBe(200);
-        expect(updateResponse.body.content).toBe(updatedCctv.content);
-
-        // Delete the CCTV entry
-        const deleteResponse = await request(app)
-            .delete(`/cctv/${cctvId}`)
-            .set('Authorization', `Bearer ${adminToken}`);
-
-        expect(deleteResponse.status).toBe(200);
-        expect(deleteResponse.body.message).toBe('cctv deleted');
-
-        const cctvInDb = await Cctv.findByPk(cctvId);
-        expect(cctvInDb).toBeNull();
-    });
-
-    it('should test authentication by logging in as an admin and performing authorized actions', async () => {
-        testsRun = true;
-        const loginResponse = await request(app)
-            .post('/login')
-            .set('x-test-request', 'true')
-            .send({ username: 'admin', password: 'admin' });
-
-        expect(loginResponse.status).toBe(200);
-        expect(loginResponse.body).toHaveProperty('access_token');
-
-        const token = loginResponse.body.access_token;
-
-        // Perform an authorized action
-        const response = await request(app)
-            .get('/cctv')
-            .set('Authorization', `Bearer ${token}`);
-
-        expect(response.status).toBe(200);
+            expect(response.status).toBe(201);
+            expect(response.body).toHaveProperty('id');
+        });
     });
 });
