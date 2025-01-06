@@ -1,5 +1,5 @@
 require('dotenv').config();
-process.env.NODE_ENV = 'test';
+process.env.NODE_ENV = 'production';
 const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
