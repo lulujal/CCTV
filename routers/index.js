@@ -4,6 +4,22 @@ const AdminController = require('../controllers/AdminController');
 const cctvController = require('../controllers/cctvController');
 const DenahGedungController = require('../controllers/DenahGedungController');
 const authorization = require('../middlewares/authorization');
+const { and } = require('sequelize');
+
+// map publlic page
+router.get('/', async (req, res) => {
+    res.render('map-public');
+});
+
+// cctv public page
+router.get('/cctv-public', async (req, res) => {
+    try {
+        await cctvController.getCctvPublic(req, res);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+});
 
 // add admin
 router.post('/admin', async (req, res) => {
@@ -20,23 +36,9 @@ router.get('/login', (req, res) => {
     res.render('index', { loginError: null });
 });
 
-router.post('/login', async (req, res) => {
-    try {
-        const loginResponse = await AdminController.AdminLogin(req, res);
+router.post('/login', AdminController.AdminLogin);
 
-        const { statusCode, body } = loginResponse;
-
-        if (statusCode === 200) {
-            res.cookie("access_token", body.access_token, { httpOnly: true });
-            return res.redirect('/admin-map');
-        } else {
-            return res.status(statusCode).json(body);
-        }
-    } catch (error) {
-        console.log('Login error:', error);
-        return res.status(500).json({ message: 'Internal Server Error' });
-    }
-});
+router.use(authentication);
 
 // menambahkan cctv
 router.post('/cctv', async (req, res) => {
@@ -159,20 +161,6 @@ router.delete('/cctvroom/:id', async (req, res) => {
     }
 });
 
-// map page
-router.get('/', async (req, res) => {
-    res.render('map-public');
-});
-
-// cctv public page
-router.get('/cctv-public', async (req, res) => {
-    try {
-        await cctvController.getCctvPublic(req, res);
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ message: 'Internal Server Error' });
-    }
-});
 
 // get cctvnormal untuk cctvnormal page
 router.get('/cctvnormal', function(req, res) {
@@ -186,7 +174,7 @@ router.get('/cctvyolo', function(req, res) {
     res.render('cctvyolo', { url: url });
 });
 
-router.use(authentication);
+
 
 // admin map page
 router.get('/admin-map', async (req, res) => {

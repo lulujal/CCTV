@@ -28,10 +28,11 @@ class AdminController {
             };
             const access_token = generateToken(payload);
             console.log('Login successful:', payload);
-            return { statusCode: 200, body: { access_token } };
+            res.cookie("access_token", access_token, { httpOnly: true });
+            return res.status(200).json({ access_token , redirectUrl: '/admin-map'});
         } catch (error) {
             console.log('Login error:', error);
-            return { statusCode: 500, body: { message: 'Internal Server Error' } };
+            return res.status(500).json({ message: 'Internal Server Error' });
         }
     }
 

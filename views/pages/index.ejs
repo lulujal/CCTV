@@ -26,7 +26,7 @@
   </nav>
     <div class="container">
       <div class="wrapper">
-          <form name="Login_Form" class="form-signin">
+          <form id="loginForm" name="Login_Form" class="form-signin">
               <h3 class="form-signin-heading">Welcome! Please Sign In</h3>
 
               <input type="text" class="form-control" name="username" placeholder="Username" required="" autofocus="" autocomplete="username" />
@@ -77,13 +77,19 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
             body: JSON.stringify({ username, password })
         });
 
-        const data = await response.json();
-        if (response.status === 200) {
-            localStorage.setItem('access_token', data.access_token);
-            window.location.href = '/admin-map'; // Redirect to admin map
-        } else {
-            alert('Login failed: ' + data.message);
-        }
+        if (response.headers.get('content-type')?.includes('application/json')) {
+                const data = await response.json();
+                if (response.status === 200) {
+                    localStorage.setItem('access_token', data.access_token);
+                    window.location.href = data.redirectUrl; // Redirect to admin map
+                } else {
+                  document.getElementById('loginErrorMessage').textContent = data.message;
+                  new bootstrap.Modal(document.getElementById('loginErrorModal')).show();
+                }
+            } else {
+              document.getElementById('loginErrorMessage').textContent = 'Unexpected response format';
+              new bootstrap.Modal(document.getElementById('loginErrorModal')).show();
+            }
     });
 
     // Helper function to get cookie value
@@ -93,23 +99,4 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
         if (parts.length === 2) return parts.pop().split(';').shift();
     }
 
-    // Function to make authenticated requests
-    async function fetchProtectedData() {
-        const token = getCookie('access_token');
-        const response = await fetch('/protected-route', {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-        const data = await response.json();
-        if (response.status === 200) {
-            console.log('Protected data:', data);
-        } else {
-            console.error('Failed to fetch protected data:', data);
-        }
-    }
-
-    // Example usage
-    fetchProtectedData();
 </script>
