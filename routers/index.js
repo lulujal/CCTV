@@ -31,6 +31,18 @@ router.post('/admin', async (req, res) => {
     }
 });
 
+// get cctvpublic streampage
+router.get('/cctvpublicstream', function(req, res) {
+    var url = decodeURIComponent(req.query.url);
+    res.render('cctvpublicstream', { url: url });
+})
+
+// get cctvnormal untuk cctvnormal page
+router.get('/cctvnormal', function(req, res) {
+    var url = decodeURIComponent(req.query.url);
+    res.render('cctvnormal', { url: url });
+});
+
 // login page
 router.get('/login', (req, res) => {
     res.render('index', { loginError: null });
@@ -162,11 +174,7 @@ router.delete('/cctvroom/:id', async (req, res) => {
 });
 
 
-// get cctvnormal untuk cctvnormal page
-router.get('/cctvnormal', function(req, res) {
-    var url = decodeURIComponent(req.query.url);
-    res.render('cctvnormal', { url: url });
-});
+
 
 // get cctvobjek untuk cctv yolo
 router.get('/cctvyolo', function(req, res) {

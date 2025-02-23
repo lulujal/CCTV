@@ -1,7 +1,48 @@
 <%- include('../partials/header')  %>
 <body class="bg-transparent-black" style="padding-top: 29px;">
   <%- include('../partials/navbar')  %>
-  <div class="iframe-container">
-    <iframe class="responsive-iframe" src="<%= url %>" allowfullscreen autoplay></iframe>
+  <link href="https://vjs.zencdn.net/7.11.4/video-js.css" rel="stylesheet">
+  <script src="https://vjs.zencdn.net/7.11.4/video.min.js"></script>
+
+  <div class="container mt-4">
+    <!-- Elemen untuk menampilkan status pemuatan video -->
+    <div id="videoStatus" class="text-center my-3">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <div id="statusMessage" class="mt-2">Sedang diproses...</div>
+    </div>
+
+    <video id="videoPlayer" class="video-js vjs-default-skin" controls preload="auto" style="width: 100%; height: auto;">
+      <source src="<%=url%>" type="application/x-mpegURL">
+    </video>
   </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      var player = videojs('videoPlayer');
+
+      // Event listener untuk memperbarui status saat video sedang diproses
+      player.on('waiting', function() {
+        document.getElementById('statusMessage').textContent = 'Sedang diproses...';
+        
+      });
+
+      // Event listener untuk memperbarui status saat video berhasil dimuat
+      player.on('canplay', function() {
+        document.getElementById('statusMessage').textContent = 'Berhasil load';
+        document.querySelector('.spinner-border').style.display = 'none';
+      });
+
+      // Event listener untuk memperbarui status saat terjadi kesalahan pemuatan video
+      player.on('error', function() {
+        document.getElementById('statusMessage').textContent = 'Gagal proses, silakan reload';
+        document.querySelector('.spinner-border').style.display = 'none';
+      });
+
+      // Memulai pemutaran video
+      player.play();
+    });
+  </script>
 </body>
+</html>
