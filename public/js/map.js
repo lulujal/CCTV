@@ -1,10 +1,46 @@
+import { MarkerClusterer, SuperClusterAlgorithm } from "@googlemaps/markerclusterer";
 async function initMap() {
-    // inisiasi variabel area unnes dan center dari map
-    const unnes = { lat:  -7.049756, lng: 110.396445 }
+     // inisiasi variabel area unnes dan center dari map
+     const unnes = { lat:  -7.049756, lng: 110.396445 }
     const map = new google.maps.Map(document.getElementById("map"), {
         zoom: 16,
         center: unnes,
+        zoomControl: false, //disable default zoom control
     });
+
+    // Menambahkan kontrol zoom slider
+    const zoomControlDiv = document.createElement("div");
+    zoomControlDiv.classList.add("zoom-control");
+
+    const zoomLabel = document.createElement("label");
+    zoomLabel.textContent = "Zoom Level: 16x";
+    zoomLabel.classList.add("zoom-label");
+
+    const zoomSlider = document.createElement("input");
+    zoomSlider.type = "range";
+    zoomSlider.min = "1";
+    zoomSlider.max = "21";
+    zoomSlider.value = "16";
+    zoomSlider.classList.add("zoom-slider");
+
+    zoomSlider.addEventListener("input", () => {
+        const zoomLevel = parseInt(zoomSlider.value);
+        map.setZoom(zoomLevel);
+        zoomLabel.textContent = `Zoom Level: ${zoomLevel}x`;
+    });
+
+        // Event listener untuk memperbarui slider ketika zoom peta berubah
+        map.addListener("zoom_changed", () => {
+            const zoomLevel = map.getZoom();
+            zoomSlider.value = zoomLevel;
+            zoomLabel.textContent = `Zoom Level: ${zoomLevel}x`;
+        });
+
+    zoomControlDiv.appendChild(zoomLabel);
+    zoomControlDiv.appendChild(zoomSlider);
+
+    // Menambahkan kontrol zoom slider ke peta
+    map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(zoomControlDiv);
 
     let area = [
         {lng: 110.3897028, lat: -7.0480879},
@@ -136,6 +172,36 @@ async function initMap() {
         {lng: 110.3897085, lat: -7.0480829},
         {lng: 110.3897028, lat: -7.0480879}
     ]
+    let testArea1 = [
+        {lng: 110.3926437, lat: -7.0488739},
+        {lng: 110.3926022, lat: -7.048961},
+        {lng: 110.392633, lat: -7.0490854},
+        {lng: 110.3926692, lat: -7.0491187},
+        {lng: 110.3927088, lat: -7.0491407},
+        {lng: 110.3927513, lat: -7.049145},
+        {lng: 110.3928234, lat: -7.0491507},
+        {lng: 110.3928663, lat: -7.0491327},
+        {lng: 110.3929092, lat: -7.0490998},
+        {lng: 110.3929508, lat: -7.0490575},
+        {lng: 110.3929523, lat: -7.0490094},
+        {lng: 110.3929511, lat: -7.04896},
+        {lng: 110.3929461, lat: -7.0489065},
+        {lng: 110.3929307, lat: -7.0488659},
+        {lng: 110.3928415, lat: -7.0488374},
+        {lng: 110.3927738, lat: -7.0488316},
+        {lng: 110.3927188, lat: -7.0488413},
+        {lng: 110.3926437, lat: -7.0488739}
+        ]
+
+    let testArea2= [
+        {lng: 110.395365,lat: -7.0489399},
+        {lng: 110.3953794,lat: -7.0489386},
+        {lng: 110.3953685,lat: -7.0488324},
+        {lng: 110.3953613,lat: -7.0487755},
+        {lng: 110.3952156,lat: -7.0487917},
+        {lng: 110.395245,lat: -7.0489602},
+        {lng: 110.395365,lat: -7.0489399}
+    ]
 
     let polygon = new google.maps.Polygon({
         paths: area,
@@ -145,8 +211,30 @@ async function initMap() {
         fillColor: "#0000FF",
         fillOpacity: 0.1,
     });
+
     // menampilkan area unnes
     polygon.setMap(map);
+
+    let polygontest1= new google.maps.Polygon({
+        paths: testArea1,
+        strokeColor: "#FF0000",
+        strokeOpacity: 0.8,
+        strokeWeight: 2,
+        fillColor: "#FF0000",
+        fillOpacity: 0.1,
+    })
+
+    let polygontest2= new google.maps.Polygon({
+        paths: testArea2,
+        strokeColor: "#00FF00",
+        strokeOpacity: 0.8,
+        strokeWeight: 2,
+        fillColor: "#00FF00",
+        fillOpacity: 0.1,
+    })
+
+    polygontest1.setMap(map);
+    polygontest2.setMap(map);
 
     // fetch data cctv dari database dengan API getCctvs
     const getCctvs = async () => {
@@ -165,9 +253,10 @@ async function initMap() {
     }
 
     const cctvs = await getCctvs();
-   
+    
     // menampilkan cctv pada map
     let currentInfoWindow = null;
+    const markers = []
     for (let i = 0; i < cctvs.length; i++) {
     try {
         // menentukan icon cctv sesuai jenisnya
@@ -214,13 +303,9 @@ async function initMap() {
         <div id="bodyContent">
         <p>${cctvs[i].content}</p>
         <p>pilih jenis cctv</p>
-        ${
-            cctvs[i].type === "street" ? createButton("CCTV NORMAL", "cctvnormal", "btn btn-primary"):
-            cctvs[i].type === "street" ? createButton("CCTV THERMAL", "cctvthermal", "btn btn-primary"):
-            cctvs[i].type === "street" ? createButton("CCVT HELM Recognition", "cctvhelm", "btn btn-primary"): 
-            cctvs[i].type === "building" ? createButton("Denah Gedung", "denahButton", "btn btn-primary") :
-            ""
-        }
+        ${createButton("CCTV NORMAL", "cctvnormal", "btn btn-primary")}
+        ${createButton("CCTV YOLOv8", "cctvobjek", "btn btn-primary")}
+        ${cctvs[i].type === "building" ? createButton("Denah Gedung", "denahButton", "btn btn-primary") : ""}
         </div>
         </div>
         `
@@ -233,6 +318,13 @@ async function initMap() {
         function cctvNormalClick(){
             console.log("cctv normal clicked");
             window.location.href = "/cctvnormal?url=" + encodeURIComponent(cctvs[i].url);
+        }
+
+        // handler cctv objek ketika di klik
+        function cctvObjekClick(){
+            console.log("cctv objek clicked");
+            const videoFeedUrl = "http://127.0.0.1:5000/video_feed?rtsp_url=" + cctvs[i].url;
+            window.location.href = "/cctvyolo?url=" + encodeURIComponent(videoFeedUrl);
         }
         
         // handler cctv gedung ketika di klik
@@ -256,6 +348,10 @@ async function initMap() {
                 const cctvNormalButton = document.getElementById("cctvnormal");
                 if (cctvNormalButton) {
                     cctvNormalButton.addEventListener("click", cctvNormalClick);
+                } 
+                const cctvObjekButton = document.getElementById("cctvobjek");
+                if (cctvObjekButton) {
+                    cctvObjekButton.addEventListener("click", cctvObjekClick);
                 }
         });
             });
@@ -294,11 +390,23 @@ async function initMap() {
          // event listener untuk menutup infowindow
          google.maps.event.addListener(map, "click", function () {
             infoWindow.close();
-          }); 
+          });
+
+        markers.push(marker); 
     }catch (error) {
         console.log(error);
     }
 }
+    new MarkerClusterer({
+        map, 
+        markers,
+        algorithm: new SuperClusterAlgorithm({
+            minClusterSize: 2,
+            maxClusterRadius: 20,
+            minClusterZoom: 0,
+            maxClusterZoom: 21,
+        }),
+    });
     document.addEventListener("DOMContentLoaded", initMap);
     
 }
