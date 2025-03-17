@@ -257,6 +257,7 @@ async function initMap() {
     // menampilkan cctv pada map
     let currentInfoWindow = null;
     const markers = []
+    const infoWindows = {}
     for (let i = 0; i < cctvs.length; i++) {
     try {
         // menentukan icon cctv sesuai jenisnya
@@ -273,6 +274,7 @@ async function initMap() {
             position: {lat: parseFloat(cctvs[i].lat), lng: parseFloat(cctvs[i].lng)},
             map: map,
             icon: iconbase,
+            title: cctvs[i].nama,
         });
 
         // membuat fungsi info window untuk cctv
@@ -313,6 +315,9 @@ async function initMap() {
         const tempInfoWindow = document.createElement("div");
         tempInfoWindow.innerHTML = content;
         const infoWindow = createCustomInfoWindow(tempInfoWindow);
+
+        // menyimpan info window ke dalam variabel infoWindows
+        infoWindows[cctvs[i].nama] = infoWindow;
 
         // handler cctv normal ketika di klik
         function cctvNormalClick(){
@@ -397,6 +402,48 @@ async function initMap() {
         console.log(error);
     }
 }
+    // Event listener untuk tombol pencarian
+    document.getElementById('button-search').addEventListener('click', function() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        const filteredCctvs = cctvs.filter(cctv => cctv.nama.toLowerCase().includes(searchTerm));
+        if (filteredCctvs.length > 0) {
+            console.log('cctv ditemukan');
+            zoomToCctv(filteredCctvs[0]);
+        } else {
+            alert('CCTV tidak ditemukan');
+        }
+    });
+
+    // Event listener untuk tombol Enter pada input pencarian
+    document.getElementById('searchInput').addEventListener('keydown', function(event) {
+         if (event.key === 'Enter') {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const filteredCctvs = cctvs.filter(cctv => cctv.nama.toLowerCase().includes(searchTerm));
+             if (filteredCctvs.length > 0) {
+                  zoomToCctv(filteredCctvs[0]);
+             } else {
+                alert('CCTV tidak ditemukan');
+             }
+         }
+     });
+
+     function zoomToCctv(cctv) {
+        const marker = markers.find(marker => marker.getTitle() === cctv.nama);
+        if (marker) {
+            console.log('Zooming to CCTV:', cctv.nama);
+            map.setZoom(20);
+            map.setCenter(marker.getPosition());
+            const infoWindow = infoWindows[cctv.nama]; // Use the existing info window
+            if (infoWindow) {
+                infoWindow.open(map, marker);
+            } else {
+                console.log('InfoWindow not found for CCTV:', cctv.nama);
+            }
+        } else {
+            console.log('Marker not found for CCTV:', cctv.nama);
+        }
+    }
+
     new MarkerClusterer({
         map, 
         markers,
