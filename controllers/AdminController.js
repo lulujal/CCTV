@@ -14,12 +14,16 @@ class AdminController {
             });
             if (!admin) {
                 console.log('Admin not found');
-                return { statusCode: 401, body: { message: "Pastikan username benar" } };
+                res.status(401).json({ message: "Pastikan username benar" });
+                return;
+                // return { statusCode: 401, body: { message: "Pastikan username benar" } };
             }
             const isCorrect = await comparePassword(password, admin.password);
             if (!isCorrect) {
                 console.log('Incorrect password');
-                return { statusCode: 401, body: { message: "Pastikan password benar" } };
+                res.status(401).json({ message: "Pastikan password benar" });
+                return;
+                // return { statusCode: 401, body: { message: "Pastikan password benar" } };
             }
             let payload = {
                 id: admin.id,

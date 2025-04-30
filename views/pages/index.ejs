@@ -85,12 +85,14 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
                 } else {
                   document.getElementById('loginErrorMessage').textContent = data.message;
                   new bootstrap.Modal(document.getElementById('loginErrorModal')).show();
+                  console.log('Response status:', response.status);
                 }
             } else {
               document.getElementById('loginErrorMessage').textContent = 'Unexpected response format';
               new bootstrap.Modal(document.getElementById('loginErrorModal')).show();
             }
     });
+
 
     // Helper function to get cookie value
     function getCookie(name) {
