@@ -431,7 +431,7 @@ async function initMap() {
         const marker = markers.find(marker => marker.getTitle() === cctv.nama);
         if (marker) {
             console.log('Zooming to CCTV:', cctv.nama);
-            map.setZoom(20);
+            map.setZoom(22);
             map.setCenter(marker.getPosition());
             const infoWindow = infoWindows[cctv.nama]; // Use the existing info window
             if (infoWindow) {
