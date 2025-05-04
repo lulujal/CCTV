@@ -257,6 +257,8 @@ async function initMap() {
    
     // menampilkan cctv pada map
     let currentInfoWindow = null;
+    let isMouseOverMarker = false;
+    let isMouseOverInfoWindow = false;
     const markers = []
     const infowindows = {}
     for (let i = 0; i < cctvs.length; i++) {
@@ -306,13 +308,9 @@ async function initMap() {
         <div id="bodyContent">
         <p>${cctvs[i].content}</p>
         <p>pilih jenis cctv</p>
-        ${
-            cctvs[i].type === "street" ? createButton("CCTV NORMAL", "cctvnormal", "btn btn-primary"):
-            cctvs[i].type === "street" ? createButton("CCTV THERMAL", "cctvthermal", "btn btn-primary"):
-            cctvs[i].type === "street" ? createButton("CCVT HELM Recognition", "cctvhelm", "btn btn-primary"): 
-            cctvs[i].type === "building" ? createButton("Denah Gedung", "denahButton", "btn btn-primary") :
-            ""
-        }
+        ${cctvs[i].type === "street" ? createButton("CCTV NORMAL", "cctvnormal", "btn btn-primary"): ""}
+        
+        ${cctvs[i].type === "building" ? createButton("Denah Gedung", "denahButton", "btn btn-primary") : ""}
         </div>
         </div>
         `
@@ -336,45 +334,131 @@ async function initMap() {
             window.location.href = "/cctvgedung/" + (cctvs[i].id);
         }
 
-        // menampilkan info window ketika marker cctv jalan di klik
-        if(cctvs[i].type === "street"){
-            marker.addListener("click", () => {
-                if (currentInfoWindow) {
-                    currentInfoWindow.close();
-                }
-                infoWindow.open(map, marker);
-                currentInfoWindow = infoWindow;
+// menampilkan info window ketika marker cctv jalan di klik
+if(cctvs[i].type === "street"){
+    // Event listener untuk menampilkan info window saat mouse masuk ke marker
+    marker.addListener("mouseover", () => {
+        isMouseOverMarker = true;
 
-                // menambahkan event click pada button cctv normal
-                infoWindow.addListener('domready', () => {
-                // Now the content is part of the DOM and you can safely add the event listener
-                const cctvNormalButton = document.getElementById("cctvnormal");
-                if (cctvNormalButton) {
-                    cctvNormalButton.addEventListener("click", cctvNormalClick);
+        // tutup info window sebelumnya
+        if (currentInfoWindow) {
+            currentInfoWindow.close();
+        }
+        infoWindow.open(map, marker);
+        currentInfoWindow = infoWindow;
+         // menambahkan event click pada button cctv normal
+         infoWindow.addListener('domready', () => {
+            // Now the content is part of the DOM and you can safely add the event listener
+            const cctvNormalButton = document.getElementById("cctvnormal");
+            if (cctvNormalButton) {
+                cctvNormalButton.addEventListener("click", cctvNormalClick);
+            } 
+            const cctvObjekButton = document.getElementById("cctvobjek");
+            if (cctvObjekButton) {
+                cctvObjekButton.addEventListener("click", cctvObjekClick);
+            }
+            });
+    })
+    // Event listener untuk menyembunyikan info window saat mouse keluar dari marker
+    marker.addListener("mouseout", () => {
+        isMouseOverMarker = false;
+        setTimeout(() => {
+            if (!isMouseOverInfoWindow) {
+                infoWindow.close();
+                if (currentInfoWindow === infoWindow) {
+                    currentInfoWindow = null;
                 }
-        });
+            }
+        }, 300); // Tambahkan sedikit delay untuk memastikan mouse tidak langsung masuk ke info window
+    });
+
+    google.maps.event.addListener(infoWindow, "domready", () => {
+        const infoWindowElement = document.querySelector(".gm-style-iw"); // Selektor untuk elemen info window
+        if (infoWindowElement) {
+            // Event listener untuk mendeteksi mouse masuk ke info window
+            infoWindowElement.addEventListener("mouseover", () => {
+                isMouseOverInfoWindow = true;
+            });
+            // Event listener untuk mendeteksi mouse keluar dari info window
+            infoWindowElement.addEventListener("mouseout", (event) => {
+                const relatedTarget = event.relatedTarget; // Elemen yang dituju oleh mouse
+                // Periksa apakah mouse benar-benar keluar dari info window
+                if (!relatedTarget || !infoWindowElement.contains(relatedTarget)) {
+                    isMouseOverInfoWindow = false;
+                    setTimeout(() => {
+                        if (!isMouseOverMarker) {
+                            infoWindow.close();
+                            if (currentInfoWindow === infoWindow) {
+                                currentInfoWindow = null; // Reset info window yang sedang terbuka
+                            }
+                        }
+                    }, 300);
+                }
             });
         }
+    });
+}
 
-        // menampilkan info window ketika marker cctv gedung di klik
-        if(cctvs[i].type === "building"){
-            marker.addListener("click", () => {
-                if (currentInfoWindow) {
-                    currentInfoWindow.close();
+// menampilkan info window ketika marker cctv gedung di klik
+if(cctvs[i].type === "building"){
+    // Event listener untuk menampilkan info window saat mouse masuk ke marker
+    marker.addListener("mouseover", () => {
+        isMouseOverMarker = true;
+
+        // tutup info window sebelumnya
+        if (currentInfoWindow) {
+            currentInfoWindow.close();
+        }
+        infoWindow.open(map, marker);
+        currentInfoWindow = infoWindow;
+         // menambahkan event click pada button cctv normal
+         infoWindow.addListener('domready', () => {
+            // Now the content is part of the DOM and you can safely add the event listener
+            const denahButton = document.getElementById("denahButton");
+            if (denahButton) {
+                denahButton.addEventListener("click", cctvGedungClick);
+            }
+            });
+    })
+    // Event listener untuk menyembunyikan info window saat mouse keluar dari marker
+    marker.addListener("mouseout", () => {
+        isMouseOverMarker = false;
+        setTimeout(() => {
+            if (!isMouseOverInfoWindow) {
+                infoWindow.close();
+                if (currentInfoWindow === infoWindow) {
+                    currentInfoWindow = null;
                 }
-                infoWindow.open(map, marker);
-                currentInfoWindow = infoWindow;
+            }
+        }, 300); // Tambahkan sedikit delay untuk memastikan mouse tidak langsung masuk ke info window
+    });
 
-                // menambahkan event click pada button denah gedung
-                infoWindow.addListener('domready', () => {
-                    // Now the content is part of the DOM and you can safely add the event listener
-                    const denahButton = document.getElementById("denahButton");
-                    if (denahButton) {
-                        denahButton.addEventListener("click", cctvGedungClick);
-                    }
-                })
+    google.maps.event.addListener(infoWindow, "domready", () => {
+        const infoWindowElement = document.querySelector(".gm-style-iw"); // Selektor untuk elemen info window
+        if (infoWindowElement) {
+            // Event listener untuk mendeteksi mouse masuk ke info window
+            infoWindowElement.addEventListener("mouseover", () => {
+                isMouseOverInfoWindow = true;
+            });
+            // Event listener untuk mendeteksi mouse keluar dari info window
+            infoWindowElement.addEventListener("mouseout", (event) => {
+                const relatedTarget = event.relatedTarget; // Elemen yang dituju oleh mouse
+                // Periksa apakah mouse benar-benar keluar dari info window
+                if (!relatedTarget || !infoWindowElement.contains(relatedTarget)) {
+                    isMouseOverInfoWindow = false;
+                    setTimeout(() => {
+                        if (!isMouseOverMarker) {
+                            infoWindow.close();
+                            if (currentInfoWindow === infoWindow) {
+                                currentInfoWindow = null; // Reset info window yang sedang terbuka
+                            }
+                        }
+                    }, 300);
+                }
             });
         }
+    });
+}
 
         else{
             marker.addListener("click", () => {
@@ -396,7 +480,57 @@ async function initMap() {
         console.log(error);
     }
 }
-
+  // Ambil elemen input dan daftar saran
+  const searchInput = document.getElementById("searchInput");
+  const suggestionList = document.getElementById("suggestionList");
+  
+  // Event listener untuk input pencarian
+  searchInput.addEventListener("input", () => {
+      const query = searchInput.value.toLowerCase();
+      suggestionList.innerHTML = ""; // Kosongkan daftar saran sebelumnya
+  
+      if (query) {
+          // Filter nama CCTV berdasarkan query
+          const filteredCctvs = cctvs.filter(cctv => cctv.nama.toLowerCase().includes(query));
+  
+          // Tampilkan daftar saran
+          filteredCctvs.forEach(cctv => {
+              const listItem = document.createElement("li");
+              listItem.textContent = cctv.nama;
+              listItem.style.padding = "5px";
+              listItem.style.cursor = "pointer";
+  
+              // Event listener untuk memilih nama dari daftar saran
+              listItem.addEventListener("click", () => {
+                  searchInput.value = cctv.nama; // Isi input dengan nama yang dipilih
+                  suggestionList.innerHTML = ""; // Kosongkan daftar saran
+                  suggestionList.style.display = "none"; // Sembunyikan daftar saran
+                  zoomToCctv(cctv); // Zoom ke CCTV yang dipilih
+              });
+  
+              suggestionList.appendChild(listItem);
+          });
+  
+          suggestionList.style.display = "block"; // Tampilkan daftar saran
+      } else {
+          suggestionList.style.display = "none"; // Sembunyikan daftar saran jika query kosong
+      }
+  });
+  
+  // Event listener untuk menyembunyikan daftar saran saat input kehilangan fokus
+  searchInput.addEventListener("blur", () => {
+      setTimeout(() => {
+          suggestionList.style.display = "none";
+      }, 200); // Tambahkan sedikit delay untuk memungkinkan klik pada daftar saran
+  });
+  
+  // Event listener untuk menampilkan kembali daftar saran saat input mendapatkan fokus
+  searchInput.addEventListener("focus", () => {
+      if (searchInput.value) {
+          suggestionList.style.display = "block";
+      }
+  });
+  
 // Event listener untuk tombol pencarian
 document.getElementById('button-search').addEventListener('click', function() {
     const searchTerm = document.getElementById('searchInput').value.toLowerCase();

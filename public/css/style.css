@@ -20,6 +20,42 @@ body {
   max-width: 600px;
 }
 
+/* Styling untuk suggestion list */
+#suggestionList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border: 1px solid #ccc;
+  max-height: 200px;
+  overflow-y: auto;
+  display: none;
+  position: absolute;
+  background-color: white;
+  z-index: 1000;
+  width: 100%; /* Sesuaikan dengan lebar input */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+}
+
+/* Styling untuk item di dalam suggestion list */
+#suggestionList li {
+  padding: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #333;
+}
+
+/* Hover effect untuk item di dalam suggestion list */
+#suggestionList li:hover {
+  background-color: #f0f0f0;
+  color: #000;
+}
+
+/* Styling untuk input pencarian */
+#searchInput {
+  position: relative;
+  z-index: 1001; /* Pastikan input berada di atas elemen lainnya */
+}
 .input-group {
   background-color: rgba(255, 255, 255, 0.9);
   border-radius: 5px;
