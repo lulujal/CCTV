@@ -173,36 +173,6 @@ async function initMap() {
         {lng: 110.3897028, lat: -7.0480879}
     ]
 
-    let testArea1 = [
-        {lng: 110.3926437, lat: -7.0488739},
-        {lng: 110.3926022, lat: -7.048961},
-        {lng: 110.392633, lat: -7.0490854},
-        {lng: 110.3926692, lat: -7.0491187},
-        {lng: 110.3927088, lat: -7.0491407},
-        {lng: 110.3927513, lat: -7.049145},
-        {lng: 110.3928234, lat: -7.0491507},
-        {lng: 110.3928663, lat: -7.0491327},
-        {lng: 110.3929092, lat: -7.0490998},
-        {lng: 110.3929508, lat: -7.0490575},
-        {lng: 110.3929523, lat: -7.0490094},
-        {lng: 110.3929511, lat: -7.04896},
-        {lng: 110.3929461, lat: -7.0489065},
-        {lng: 110.3929307, lat: -7.0488659},
-        {lng: 110.3928415, lat: -7.0488374},
-        {lng: 110.3927738, lat: -7.0488316},
-        {lng: 110.3927188, lat: -7.0488413},
-        {lng: 110.3926437, lat: -7.0488739}
-        ]
-
-    let testArea2= [
-        {lng: 110.395365,lat: -7.0489399},
-        {lng: 110.3953794,lat: -7.0489386},
-        {lng: 110.3953685,lat: -7.0488324},
-        {lng: 110.3953613,lat: -7.0487755},
-        {lng: 110.3952156,lat: -7.0487917},
-        {lng: 110.395245,lat: -7.0489602},
-        {lng: 110.395365,lat: -7.0489399}
-    ]
 
     let polygon = new google.maps.Polygon({
         paths: area,
@@ -215,27 +185,6 @@ async function initMap() {
 
     // menampilkan area unnes
     polygon.setMap(map);
-
-    let polygontest1= new google.maps.Polygon({
-        paths: testArea1,
-        strokeColor: "#FF0000",
-        strokeOpacity: 0.8,
-        strokeWeight: 2,
-        fillColor: "#FF0000",
-        fillOpacity: 0.1,
-    })
-
-    let polygontest2= new google.maps.Polygon({
-        paths: testArea2,
-        strokeColor: "#00FF00",
-        strokeOpacity: 0.8,
-        strokeWeight: 2,
-        fillColor: "#00FF00",
-        fillOpacity: 0.1,
-    })
-
-    polygontest1.setMap(map);
-    polygontest2.setMap(map);
 
     // fetch data cctv dari database dengan API getCctvs
     const getCctvs = async () => {

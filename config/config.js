@@ -2,7 +2,7 @@ require('dotenv').config()
 module.exports = {
     development: {
 
-        // // CCTV SUPABASE
+        // // CCTV SUPABASE rekayasa 20 CCTV
         // "username" : process.env.PGUSER,
         // "password" : process.env.PGPASSWORD,
         // "database" : process.env.PGDATABASE,
