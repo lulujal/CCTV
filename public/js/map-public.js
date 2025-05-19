@@ -172,7 +172,21 @@ async function initMap() {
         {lng: 110.3897085, lat: -7.0480829},
         {lng: 110.3897028, lat: -7.0480879}
     ]
-
+    let testArea = 
+    [
+        { "lng": 110.4014011, "lat": -7.0502873 },
+        { "lng": 110.4011543, "lat": -7.0506707 },
+        { "lng": 110.4014561, "lat": -7.0507918 },
+        { "lng": 110.4016291, "lat": -7.0510407 },
+        { "lng": 110.4020932, "lat": -7.0512297 },
+        { "lng": 110.4017391, "lat": -7.0520708 },
+        { "lng": 110.4031392, "lat": -7.0527789 },
+        { "lng": 110.4034289, "lat": -7.0525287 },
+        { "lng": 110.4033216, "lat": -7.0516130 },
+        { "lng": 110.4027503, "lat": -7.0511764 },
+        { "lng": 110.4020502, "lat": -7.0508623 },
+        { "lng": 110.4014011, "lat": -7.0502873 }
+    ]
 
     let polygon = new google.maps.Polygon({
         paths: area,
@@ -183,8 +197,18 @@ async function initMap() {
         fillOpacity: 0.1,
     });
 
+    let polygon2 = new google.maps.Polygon({
+        paths: testArea,
+        strokeColor: "#FF0000",
+        strokeOpacity: 0.8,
+        strokeWeight: 2,
+        fillColor: "#00FF00",
+        fillOpacity: 0.2,
+    });
+
     // menampilkan area unnes
     polygon.setMap(map);
+    polygon2.setMap(map);
 
     // fetch data cctv dari database dengan API getCctvs
     const getCctvs = async () => {
@@ -256,6 +280,7 @@ async function initMap() {
         <h1 id="firstHeading" class="firstHeading">${cctvs[i].nama}</h1>
         <div id="bodyContent">
         <p>${cctvs[i].content}</p>
+        <p> "Koordinat Latitude: ${cctvs[i].lat} | Koordinat Longitude: ${cctvs[i].lng}"</p>
         <p>pilih jenis cctv</p>
         ${cctvs[i].type === "street" ? createButton("CCTV NORMAL", "cctvnormal", "btn btn-primary"): ""}
         
