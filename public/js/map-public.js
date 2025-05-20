@@ -306,12 +306,31 @@ async function initMap() {
         function cctvGedungClick(){
             console.log("cctv gedung clicked");
             window.location.href = "/cctvgedung/" + (cctvs[i].id);
-        }
+        }  
 
 // menampilkan info window ketika marker cctv jalan di klik
 if(cctvs[i].type === "street"){
+    marker.addListener("click", () => {
+        if (currentInfoWindow) {
+            currentInfoWindow.close();
+        }
+        infoWindow.open(map, marker);
+        currentInfoWindow = infoWindow;
+        infoWindow.addListener('domready', () => {
+            // Now the content is part of the DOM and you can safely add the event listener
+            const cctvNormalButton = document.getElementById("cctvnormal");
+            if (cctvNormalButton) {
+                cctvNormalButton.addEventListener("click", cctvNormalClick);
+            } 
+            const cctvObjekButton = document.getElementById("cctvobjek");
+            if (cctvObjekButton) {
+                cctvObjekButton.addEventListener("click", cctvObjekClick);
+            }
+            });
+    })
     // Event listener untuk menampilkan info window saat mouse masuk ke marker
     marker.addListener("mouseover", () => {
+        
         isMouseOverMarker = true;
 
         // tutup info window sebelumnya
